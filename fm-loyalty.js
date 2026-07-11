@@ -12,7 +12,7 @@
    ========================================================== */
 (function () {
   // ⚠️ استبدل ده برابط الـ Web App بتاعك من Apps Script
-  const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbzHz75oyatpHHoxozVGJG3rmwlzkLVYkH7n_ich2Q1aO6OjNeZt9CQxgA9z01qD0FzXSg/exec';
+  const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbwGeglk-WXEiFXhVoa-RAY4mIt2i45AhMoATec1_mMezgYDAXKlaTuWYVyGcxzByVyHWQ/exec';
 
   const TIERS = [
     { points: 100, discount: 30 },
