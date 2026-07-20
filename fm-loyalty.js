@@ -6,7 +6,7 @@
    2. ارفع الملف ده زي ما هو على GitHub Pages.
    3. في Ecwid (خانة Custom code) حط بس:​
 
-      <div id="fm-loyalty-root" dir="rtl" lang="ar"></div>
+      <div id="fm-loyalty-root" dir="ltr" lang="en"></div>
       <script src="https://YOUR-USERNAME.github.io/YOUR-REPO/fm-loyalty.js"></script>
 
    ========================================================== */
@@ -119,13 +119,6 @@
   let currentLocale = 'en';
 
   function detectLocale(root) {
-    const languages = Array.isArray(navigator.languages) ? navigator.languages : [navigator.language || navigator.userLanguage || 'en'];
-    const normalized = languages.filter(Boolean).map(l => l.trim().toLowerCase());
-    if (normalized.some(lang => /^ar\b/.test(lang))) return 'ar';
-    if (normalized.some(lang => /^en\b/.test(lang))) return 'en';
-    const rootLang = (root?.getAttribute('lang') || '').trim().toLowerCase();
-    if (/^ar\b/.test(rootLang)) return 'ar';
-    if (/^en\b/.test(rootLang)) return 'en';
     return 'en';
   }
 
