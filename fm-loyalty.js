@@ -78,7 +78,7 @@
       subtitle: 'Every 10 EGP on any order = 1 point. Enter the email you order with and see your balance.',
       emailPlaceholder: 'example@email.com',
       checkButton: 'Show my balance',
-      historyButton: 'My old codes',
+      historyButton: 'My codes',
       tiersTitle: 'Redemption tiers',
       balanceLabel: 'Available points',
       invalidEmail: 'Enter a valid email first 🙏',
