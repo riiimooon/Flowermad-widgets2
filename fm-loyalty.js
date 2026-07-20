@@ -118,9 +118,15 @@
 
   let currentLocale = 'en';
 
-  function detectLocale() {
-    const browserLang = (navigator.languages && navigator.languages[0]) || navigator.language || navigator.userLanguage || 'en';
-    return /^ar\b/i.test(browserLang) ? 'ar' : 'en';
+  function detectLocale(root) {
+    const languages = Array.isArray(navigator.languages) ? navigator.languages : [navigator.language || navigator.userLanguage || 'en'];
+    const normalized = languages.filter(Boolean).map(l => l.trim().toLowerCase());
+    if (normalized.some(lang => /^ar\b/.test(lang))) return 'ar';
+    if (normalized.some(lang => /^en\b/.test(lang))) return 'en';
+    const rootLang = (root?.getAttribute('lang') || '').trim().toLowerCase();
+    if (/^ar\b/.test(rootLang)) return 'ar';
+    if (/^en\b/.test(rootLang)) return 'en';
+    return 'en';
   }
 
   function formatDate(dateString, locale) {
