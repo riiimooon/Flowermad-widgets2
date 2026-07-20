@@ -29,6 +29,112 @@
   };
   const BLOOM_SEQUENCE = ['bud', 'half', 'open', 'full'];
 
+  const TEXTS = {
+    ar: {
+      eyebrow: '🌹 برنامج نقاط FlowerMad',
+      title: 'نقاطك بتتجمع من نفسها',
+      subtitle: 'كل 10 جنيه في أي أوردر = نقطة. اكتب إيميلك اللي بتطلب بيه وشوف رصيدك.',
+      emailPlaceholder: 'example@email.com',
+      checkButton: 'اعرض رصيدي',
+      historyButton: 'أكوادي السابقة',
+      tiersTitle: 'درجات الاستبدال',
+      balanceLabel: 'نقطة متاحة',
+      invalidEmail: 'اكتب إيميل صحيح الأول 🙏',
+      loadingBalance: 'بنجيب رصيدك...',
+      emptyUser: 'لسه معندناش نقاط باسم الإيميل ده.<br>اطلب أول باقة وابدأ تجمع نقاطك 🌹',
+      canRedeem: (discount) => `تقدر تستبدل دلوقتي بخصم <b>${discount} جنيه</b>`,
+      redeemButton: 'استبدل نقاطي دلوقتي',
+      nextTier: (points) => `محتاج <b>${points} نقطة</b> كمان عشان توصل لأقرب مكافأة`,
+      redeemLoading: 'بنبعتلك كود تحقق على إيميلك...',
+      otpPrompt: 'بعتنالك كود من 6 أرقام على إيميلك، اكتبه هنا:',
+      otpPlaceholder: '——   ——   ——',
+      otpConfirm: 'تأكيد',
+      otpResend: 'مستلمتش الكود؟ ابعته تاني',
+      invalidOtp: 'اكتب الكود المكوّن من 6 أرقام',
+      verifyingOtp: 'بنتحقق من الكود...',
+      couponTitle: 'كود الخصم بتاعك',
+      couponNote: (discount, remainingPoints) =>
+        `خصم ${discount} جنيه — الصقه في خانة الكوبون وقت الدفع.<br>رصيدك المتبقي: ${remainingPoints} نقطة.`,
+      copyButton: 'نسخ الكود',
+      copied: 'اتنسخ ✓',
+      copyButtonDefault: 'نسخ الكود',
+      connectionError: 'حصلت مشكلة في الاتصال، حاول تاني بعد شوية',
+      sendOtpError: 'حصلت مشكلة في إرسال الكود، حاول تاني',
+      errorRetry: 'حصلت مشكلة، حاول تاني',
+      historyEmailRequired: 'اكتب إيميلك الأول عشان نعرض أكوادك 🙏',
+      historyLoading: 'بنجيب أكوادك...',
+      noHistory: 'لسه معملتش أي استبدال. لما تجمع نقاط كفاية تقدر تستبدلها من فوق.',
+      couponsLabel: 'أكوادك',
+      activeBadge: 'لسه شغال',
+      usedBadge: 'مستخدم',
+      tierPoints: (points) => `${points} نقطة`,
+      tierDiscount: (discount) => `خصم ${discount} جنيه`,
+      couponMeta: (c, formatDate) =>
+        `خصم ${c.discount} جنيه — ${c.pointsUsed} نقطة${c.orderNumber ? `<br>استُخدم في أوردر #${c.orderNumber}${c.usedDate ? ' — ' + formatDate(c.usedDate) : ''}` : ''}`
+    },
+    en: {
+      eyebrow: 'FlowerMad Loyalty Program',
+      title: 'Your points grow automatically',
+      subtitle: 'Every 10 EGP on any order = 1 point. Enter the email you order with and see your balance.',
+      emailPlaceholder: 'example@email.com',
+      checkButton: 'Show my balance',
+      historyButton: 'My codes',
+      tiersTitle: 'Redemption tiers',
+      balanceLabel: 'Available points',
+      invalidEmail: 'Enter a valid email first 🙏',
+      loadingBalance: 'Fetching your balance...',
+      emptyUser: 'No points found for this email yet.<br>Order a package and start collecting points 🌹',
+      canRedeem: (discount) => `You can redeem now for a <b>${discount} EGP</b> discount`,
+      nextTier: (points) => `Need <b>${points} points</b> more to reach the next reward`,
+      redeemLoading: 'Sending a verification code to your email...',
+      otpPrompt: 'We sent you a 6-digit code to your email, enter it here:',
+      otpPlaceholder: '——   ——   ——',
+      otpConfirm: 'Confirm',
+      otpResend: 'Didn’t get the code? Send it again',
+      invalidOtp: 'Enter the 6-digit code',
+      verifyingOtp: 'Verifying the code...',
+      couponTitle: 'Your discount code',
+      couponNote: (discount, remainingPoints) =>
+        `${discount} EGP off — paste it in the coupon field at checkout.<br>Your remaining balance: ${remainingPoints} points.`,
+      copyButton: 'Copy code',
+      copied: 'Copied ✓',
+      copyButtonDefault: 'Copy code',
+      connectionError: 'Connection issue, please try again later',
+      sendOtpError: 'Failed to send the code, please try again',
+      errorRetry: 'Something went wrong, please try again',
+      historyEmailRequired: 'Enter your email first to show your codes 🙏',
+      historyLoading: 'Fetching your codes...',
+      noHistory: 'No redemptions yet. When you collect enough points you can redeem above.',
+      couponsLabel: 'Your codes',
+      activeBadge: 'Active',
+      usedBadge: 'Used',
+      tierPoints: (points) => `${points} points`,
+      tierDiscount: (discount) => `${discount} EGP off`,
+      couponMeta: (c, formatDate) =>
+        `${c.discount} EGP off — ${c.pointsUsed} points${c.orderNumber ? `<br>Used on order #${c.orderNumber}${c.usedDate ? ' — ' + formatDate(c.usedDate) : ''}` : ''}`
+    }
+  };
+
+  let currentLocale = 'en';
+
+  function detectLocale(root) {
+    const rootLang = (root?.getAttribute('lang') || '').trim();
+    const browserLang = (navigator.languages && navigator.languages[0]) || navigator.language || navigator.userLanguage || 'en';
+    const isArabic = /^ar\b/i.test(rootLang) || /^ar\b/i.test(browserLang);
+    return isArabic ? 'ar' : 'en';
+  }
+
+  function formatDate(dateString, locale) {
+    if (!dateString) return null;
+    const parsed = new Date(dateString.replace(' ', 'T').replace(' +0000', 'Z'));
+    if (isNaN(parsed)) return dateString.split(' ')[0];
+    return parsed.toLocaleDateString(locale === 'ar' ? 'ar-EG' : 'en-US', {
+      day: 'numeric',
+      month: 'short',
+      year: 'numeric'
+    });
+  }
+
   // ---------- حقن الـ CSS مرة واحدة ----------
   function injectStyles() {
     if (document.getElementById('fm-loyalty-styles')) return;
@@ -114,25 +220,26 @@
   }
 
   function render(root) {
+    const T = TEXTS[currentLocale];
     root.innerHTML = `
       <div class="fm-card">
-        <div class="fm-eyebrow">🌹 برنامج نقاط FlowerMad</div>
-        <h1>نقاطك بتتجمع من نفسها</h1>
-        <p class="fm-sub">كل 10 جنيه في أي أوردر = نقطة. اكتب إيميلك اللي بتطلب بيه وشوف رصيدك.</p>
+        <div class="fm-eyebrow">${T.eyebrow}</div>
+        <h1>${T.title}</h1>
+        <p class="fm-sub">${T.subtitle}</p>
         <div class="fm-row">
-          <input type="email" id="fm-email" placeholder="example@email.com" />
-          <button class="fm-btn-primary" id="fm-check-btn">اعرض رصيدي</button>
+          <input type="email" id="fm-email" placeholder="${T.emailPlaceholder}" />
+          <button class="fm-btn-primary" id="fm-check-btn">${T.checkButton}</button>
         </div>
         <div class="fm-result" id="fm-result"></div>
         <div class="fm-tiers">
-          <div class="fm-tiers-title">درجات الاستبدال</div>
+          <div class="fm-tiers-title">${T.tiersTitle}</div>
           ${TIERS.map(t => `
             <div class="fm-tier-row">
-              <span>${t.points} نقطة</span>
-              <span>خصم ${t.discount} جنيه</span>
+              <span>${T.tierPoints(t.points)}</span>
+              <span>${T.tierDiscount(t.discount)}</span>
             </div>`).join('')}
         </div>
-        <button class="fm-history-link" id="fm-history-btn">أكوادي السابقة</button>
+        <button class="fm-history-link" id="fm-history-btn">${T.historyButton}</button>
       </div>
     `;
 
@@ -144,18 +251,19 @@
   }
 
   async function checkBalance() {
+    const T = TEXTS[currentLocale];
     const emailInput = document.getElementById('fm-email');
     const email = emailInput.value.trim();
     const resultBox = document.getElementById('fm-result');
 
     if (!email || !email.includes('@')) {
       resultBox.className = 'fm-result fm-show';
-      resultBox.innerHTML = `<div class="fm-error">اكتب إيميل صحيح الأول 🙏</div>`;
+      resultBox.innerHTML = `<div class="fm-error">${T.invalidEmail}</div>`;
       return;
     }
 
     resultBox.className = 'fm-result fm-show';
-    resultBox.innerHTML = `<div class="fm-loading">بنجيب رصيدك...</div>`;
+    resultBox.innerHTML = `<div class="fm-loading">${T.loadingBalance}</div>`;
 
     try {
       const res = await fetch(`${APPS_SCRIPT_URL}?email=${encodeURIComponent(email)}`);
@@ -164,8 +272,7 @@
       if (!data.found) {
         resultBox.innerHTML = `
           <div class="fm-empty">
-            لسه معندناش نقاط باسم الإيميل ده.<br>
-            اطلب أول باقة وابدأ تجمع نقاطك 🌹
+            ${T.emptyUser}
           </div>`;
         return;
       }
@@ -174,7 +281,7 @@
         <div class="fm-balance-block">
           <div>
             <div class="fm-balance-num">${data.points}</div>
-            <div class="fm-balance-label">نقطة متاحة</div>
+            <div class="fm-balance-label">${T.balanceLabel}</div>
           </div>
         </div>
         ${renderBloomTrack(data.points)}
@@ -182,12 +289,12 @@
 
       if (data.canRedeem) {
         html += `
-          <div class="fm-next">تقدر تستبدل دلوقتي بخصم <b>${data.eligibleDiscount} جنيه</b></div>
-          <button class="fm-btn-gold" id="fm-redeem-btn">استبدل نقاطي دلوقتي</button>
+          <div class="fm-next">${T.canRedeem(data.eligibleDiscount)}</div>
+          <button class="fm-btn-gold" id="fm-redeem-btn">${T.redeemButton}</button>
         `;
       } else if (data.pointsToNextTier) {
         html += `
-          <div class="fm-next">محتاج <b>${data.pointsToNextTier} نقطة</b> كمان عشان توصل لأقرب مكافأة</div>
+          <div class="fm-next">${T.nextTier(data.pointsToNextTier)}</div>
         `;
       }
 
@@ -198,31 +305,32 @@
         redeemBtn.addEventListener('click', () => redeemPoints(email));
       }
     } catch (err) {
-      resultBox.innerHTML = `<div class="fm-error">حصلت مشكلة في الاتصال، حاول تاني بعد شوية</div>`;
+      resultBox.innerHTML = `<div class="fm-error">${T.connectionError}</div>`;
     }
   }
 
   async function redeemPoints(email) {
+    const T = TEXTS[currentLocale];
     const resultBox = document.getElementById('fm-result');
-    resultBox.innerHTML = `<div class="fm-loading">بنبعتلك كود تحقق على إيميلك...</div>`;
+    resultBox.innerHTML = `<div class="fm-loading">${T.redeemLoading}</div>`;
 
     try {
       const res = await fetch(`${APPS_SCRIPT_URL}?email=${encodeURIComponent(email)}&action=request-otp`);
       const data = await res.json();
 
       if (!data.success) {
-        resultBox.innerHTML = `<div class="fm-error">حصلت مشكلة في إرسال الكود، حاول تاني</div>`;
+        resultBox.innerHTML = `<div class="fm-error">${T.sendOtpError}</div>`;
         return;
       }
 
       resultBox.innerHTML = `
         <div class="fm-otp-box">
-          <div style="font-size:14px;margin-bottom:10px;">بعتنالك كود من 6 أرقام على إيميلك، اكتبه هنا:</div>
+          <div style="font-size:14px;margin-bottom:10px;">${T.otpPrompt}</div>
           <div class="fm-row">
-            <input type="text" id="fm-otp-input" placeholder="——   ——   ——" maxlength="6" inputmode="numeric" />
-            <button class="fm-btn-primary" id="fm-otp-confirm">تأكيد</button>
+            <input type="text" id="fm-otp-input" placeholder="${T.otpPlaceholder}" maxlength="6" inputmode="numeric" />
+            <button class="fm-btn-primary" id="fm-otp-confirm">${T.otpConfirm}</button>
           </div>
-          <button class="fm-resend-link" id="fm-otp-resend">مستلمتش الكود؟ ابعته تاني</button>
+          <button class="fm-resend-link" id="fm-otp-resend">${T.otpResend}</button>
         </div>
       `;
 
@@ -232,96 +340,89 @@
       });
       document.getElementById('fm-otp-resend').addEventListener('click', () => redeemPoints(email));
     } catch (err) {
-      resultBox.innerHTML = `<div class="fm-error">حصلت مشكلة في الاتصال، حاول تاني بعد شوية</div>`;
+      resultBox.innerHTML = `<div class="fm-error">${T.connectionError}</div>`;
     }
   }
 
   async function confirmOtp(email) {
+    const T = TEXTS[currentLocale];
     const otpInput = document.getElementById('fm-otp-input');
     const otp = otpInput.value.trim();
     const resultBox = document.getElementById('fm-result');
 
     if (!otp || otp.length !== 6) {
-      resultBox.innerHTML = `<div class="fm-error">اكتب الكود المكوّن من 6 أرقام</div>` + resultBox.innerHTML;
+      resultBox.innerHTML = `<div class="fm-error">${T.invalidOtp}</div>` + resultBox.innerHTML;
       return;
     }
 
-    resultBox.innerHTML = `<div class="fm-loading">بنتحقق من الكود...</div>`;
+    resultBox.innerHTML = `<div class="fm-loading">${T.verifyingOtp}</div>`;
 
     try {
       const res = await fetch(`${APPS_SCRIPT_URL}?email=${encodeURIComponent(email)}&action=redeem&otp=${encodeURIComponent(otp)}`);
       const data = await res.json();
 
       if (!data.success) {
-        resultBox.innerHTML = `<div class="fm-error">${data.message || 'حصلت مشكلة، حاول تاني'}</div>`;
+        resultBox.innerHTML = `<div class="fm-error">${data.message || T.errorRetry}</div>`;
         return;
       }
 
       resultBox.innerHTML = `
         <div class="fm-coupon-box">
-          <div style="font-size:13px;color:var(--fm-ink-soft)">كود الخصم بتاعك</div>
+          <div style="font-size:13px;color:var(--fm-ink-soft)">${T.couponTitle}</div>
           <div class="fm-coupon-code">${data.couponCode}</div>
           <div class="fm-coupon-note">
-            خصم ${data.discount} جنيه — الصقه في خانة الكوبون وقت الدفع.<br>
-            رصيدك المتبقي: ${data.remainingPoints} نقطة.
+            ${T.couponNote(data.discount, data.remainingPoints)}
           </div>
-          <button class="fm-copy-btn" id="fm-copy-btn">نسخ الكود</button>
+          <button class="fm-copy-btn" id="fm-copy-btn">${T.copyButton}</button>
         </div>
       `;
 
       document.getElementById('fm-copy-btn').addEventListener('click', function () {
         navigator.clipboard.writeText(data.couponCode);
-        this.textContent = 'اتنسخ ✓';
-        setTimeout(() => { this.textContent = 'نسخ الكود'; }, 1800);
+        this.textContent = T.copied;
+        setTimeout(() => { this.textContent = T.copyButtonDefault; }, 1800);
       });
     } catch (err) {
-      resultBox.innerHTML = `<div class="fm-error">حصلت مشكلة في الاتصال، حاول تاني بعد شوية</div>`;
+      resultBox.innerHTML = `<div class="fm-error">${T.connectionError}</div>`;
     }
   }
 
   async function showHistory() {
+    const T = TEXTS[currentLocale];
     const emailInput = document.getElementById('fm-email');
     const email = emailInput.value.trim();
     const resultBox = document.getElementById('fm-result');
 
     if (!email || !email.includes('@')) {
       resultBox.className = 'fm-result fm-show';
-      resultBox.innerHTML = `<div class="fm-error">اكتب إيميلك الأول عشان نعرض أكوادك 🙏</div>`;
+      resultBox.innerHTML = `<div class="fm-error">${T.historyEmailRequired}</div>`;
       return;
     }
 
     resultBox.className = 'fm-result fm-show';
-    resultBox.innerHTML = `<div class="fm-loading">بنجيب أكوادك...</div>`;
+    resultBox.innerHTML = `<div class="fm-loading">${T.historyLoading}</div>`;
 
     try {
       const res = await fetch(`${APPS_SCRIPT_URL}?email=${encodeURIComponent(email)}&action=history`);
       const data = await res.json();
 
       if (!data.coupons || data.coupons.length === 0) {
-        resultBox.innerHTML = `<div class="fm-empty">لسه معملتش أي استبدال. لما تجمع نقاط كفاية تقدر تستبدلها من فوق.</div>`;
+        resultBox.innerHTML = `<div class="fm-empty">${T.noHistory}</div>`;
         return;
       }
 
       const statusLabel = (status) => status === 'ACTIVE'
-        ? '<span class="fm-badge fm-badge-active">لسه شغال</span>'
-        : '<span class="fm-badge fm-badge-used">مستخدم</span>';
-
-      const formatDate = (d) => {
-        if (!d) return null;
-        const parsed = new Date(d.replace(' ', 'T').replace(' +0000', 'Z'));
-        if (isNaN(parsed)) return d.split(' ')[0];
-        return parsed.toLocaleDateString('ar-EG', { day: 'numeric', month: 'short', year: 'numeric' });
-      };
+        ? `<span class="fm-badge fm-badge-active">${T.activeBadge}</span>`
+        : `<span class="fm-badge fm-badge-used">${T.usedBadge}</span>`;
 
       resultBox.innerHTML = `
-        <div style="font-size:13px;font-weight:700;color:var(--fm-ink-soft);margin-bottom:6px;">أكوادك</div>
+        <div style="font-size:13px;font-weight:700;color:var(--fm-ink-soft);margin-bottom:6px;">${T.couponsLabel}</div>
         ${data.coupons.map(c => `
           <div class="fm-history-item">
             <div>
               <div class="fm-history-code">${c.couponCode}</div>
               <div class="fm-history-meta">
-                خصم ${c.discount} جنيه — ${c.pointsUsed} نقطة
-                ${c.orderNumber ? `<br>استُخدم في أوردر #${c.orderNumber}${c.usedDate ? ' — ' + formatDate(c.usedDate) : ''}` : ''}
+                ${T.couponMeta(c, d => formatDate(d, currentLocale))}
               </div>
             </div>
             ${statusLabel(c.status)}
@@ -329,7 +430,7 @@
         `).join('')}
       `;
     } catch (err) {
-      resultBox.innerHTML = `<div class="fm-error">حصلت مشكلة في الاتصال، حاول تاني بعد شوية</div>`;
+      resultBox.innerHTML = `<div class="fm-error">${T.connectionError}</div>`;
     }
   }
 
@@ -338,6 +439,8 @@
     const root = document.getElementById('fm-loyalty-root');
     if (!root) return; // الصفحة دي مفيهاش الويدجت، متعملش حاجة
     injectStyles();
+    currentLocale = detectLocale(root);
+    root.dir = currentLocale === 'ar' ? 'rtl' : 'ltr';
     render(root);
   }
 
