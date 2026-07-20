@@ -102,6 +102,7 @@
       connectionError: 'Connection issue, please try again later',
       sendOtpError: 'Failed to send the code, please try again',
       errorRetry: 'Something went wrong, please try again',
+      redeemButton: 'Redeem now',
       historyEmailRequired: 'Enter your email first to show your codes 🙏',
       historyLoading: 'Fetching your codes...',
       noHistory: 'No redemptions yet. When you collect enough points you can redeem above.',
@@ -120,8 +121,9 @@
   function detectLocale(root) {
     const rootLang = (root?.getAttribute('lang') || '').trim();
     const browserLang = (navigator.languages && navigator.languages[0]) || navigator.language || navigator.userLanguage || 'en';
-    const isArabic = /^ar\b/i.test(rootLang) || /^ar\b/i.test(browserLang);
-    return isArabic ? 'ar' : 'en';
+    if (/^ar\b/i.test(browserLang)) return 'ar';
+    if (/^ar\b/i.test(rootLang)) return 'ar';
+    return 'en';
   }
 
   function formatDate(dateString, locale) {
@@ -440,6 +442,7 @@
     if (!root) return; // الصفحة دي مفيهاش الويدجت، متعملش حاجة
     injectStyles();
     currentLocale = detectLocale(root);
+    root.lang = currentLocale;
     root.dir = currentLocale === 'ar' ? 'rtl' : 'ltr';
     render(root);
   }
