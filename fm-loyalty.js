@@ -118,12 +118,9 @@
 
   let currentLocale = 'en';
 
-  function detectLocale(root) {
-    const rootLang = (root?.getAttribute('lang') || '').trim();
+  function detectLocale() {
     const browserLang = (navigator.languages && navigator.languages[0]) || navigator.language || navigator.userLanguage || 'en';
-    if (/^ar\b/i.test(browserLang)) return 'ar';
-    if (/^ar\b/i.test(rootLang)) return 'ar';
-    return 'en';
+    return /^ar\b/i.test(browserLang) ? 'ar' : 'en';
   }
 
   function formatDate(dateString, locale) {
