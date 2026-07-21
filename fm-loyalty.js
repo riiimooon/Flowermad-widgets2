@@ -1,17 +1,17 @@
-/* ==================================================
-   FlowerMad — Loyalty Widget (...نسخة الاستضافة الخارجية)
+/* ==========================================================
+   FlowerMad — Loyalty Widget (English version, external hosting)
    ==========================================================
-   استخدام:
-   1. غيّر قيمة APPS_SCRIPT_URL تحت برابط الـ Web App بتاعك.
-   2. ارفع الملف ده زي ما هو على GitHub Pages.
-   3. في Ecwid (خانة Custom code) حط بس:​
+   Usage:
+   1. Set APPS_SCRIPT_URL below to your Apps Script Web App URL.
+   2. Upload this file as-is to GitHub Pages.
+   3. In Ecwid (Custom code section) add just:
 
-      <div id="fm-loyalty-root" dir="ltr" lang="en"></div>
+      <div id="fm-loyalty-root"></div>
       <script src="https://YOUR-USERNAME.github.io/YOUR-REPO/fm-loyalty.js"></script>
 
    ========================================================== */
 (function () {
-  // ⚠️ استبدل ده برابط الـ Web App بتاعك من Apps Script
+  // ⚠️ Replace this with your Apps Script Web App URL
   const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxzdwDo5gs1ZlHyx-SEQS_nrqBdCCcchGdjI87Feys49XFs5Ot0wppclKZDG9yoVO21rA/exec';
 
   const TIERS = [
@@ -29,111 +29,7 @@
   };
   const BLOOM_SEQUENCE = ['bud', 'half', 'open', 'full'];
 
-  const TEXTS = {
-    ar: {
-      eyebrow: '🌹 برنامج نقاط FlowerMad',
-      title: 'نقاطك بتتجمع من نفسها',
-      subtitle: 'كل 10 جنيه في أي أوردر = نقطة. اكتب إيميلك اللي بتطلب بيه وشوف رصيدك.',
-      emailPlaceholder: 'example@email.com',
-      checkButton: 'اعرض رصيدي',
-      historyButton: 'أكوادي السابقة',
-      tiersTitle: 'درجات الاستبدال',
-      balanceLabel: 'نقطة متاحة',
-      invalidEmail: 'اكتب إيميل صحيح الأول 🙏',
-      loadingBalance: 'بنجيب رصيدك...',
-      emptyUser: 'لسه معندناش نقاط باسم الإيميل ده.<br>اطلب أول باقة وابدأ تجمع نقاطك 🌹',
-      canRedeem: (discount) => `تقدر تستبدل دلوقتي بخصم <b>${discount} جنيه</b>`,
-      redeemButton: 'استبدل نقاطي دلوقتي',
-      nextTier: (points) => `محتاج <b>${points} نقطة</b> كمان عشان توصل لأقرب مكافأة`,
-      redeemLoading: 'بنبعتلك كود تحقق على إيميلك...',
-      otpPrompt: 'بعتنالك كود من 6 أرقام على إيميلك، اكتبه هنا:',
-      otpPlaceholder: '——   ——   ——',
-      otpConfirm: 'تأكيد',
-      otpResend: 'مستلمتش الكود؟ ابعته تاني',
-      invalidOtp: 'اكتب الكود المكوّن من 6 أرقام',
-      verifyingOtp: 'بنتحقق من الكود...',
-      couponTitle: 'كود الخصم بتاعك',
-      couponNote: (discount, remainingPoints) =>
-        `خصم ${discount} جنيه — الصقه في خانة الكوبون وقت الدفع.<br>رصيدك المتبقي: ${remainingPoints} نقطة.`,
-      copyButton: 'نسخ الكود',
-      copied: 'اتنسخ ✓',
-      copyButtonDefault: 'نسخ الكود',
-      connectionError: 'حصلت مشكلة في الاتصال، حاول تاني بعد شوية',
-      sendOtpError: 'حصلت مشكلة في إرسال الكود، حاول تاني',
-      errorRetry: 'حصلت مشكلة، حاول تاني',
-      historyEmailRequired: 'اكتب إيميلك الأول عشان نعرض أكوادك 🙏',
-      historyLoading: 'بنجيب أكوادك...',
-      noHistory: 'لسه معملتش أي استبدال. لما تجمع نقاط كفاية تقدر تستبدلها من فوق.',
-      couponsLabel: 'أكوادك',
-      activeBadge: 'لسه شغال',
-      usedBadge: 'مستخدم',
-      tierPoints: (points) => `${points} نقطة`,
-      tierDiscount: (discount) => `خصم ${discount} جنيه`,
-      couponMeta: (c, formatDate) =>
-        `خصم ${c.discount} جنيه — ${c.pointsUsed} نقطة${c.orderNumber ? `<br>استُخدم في أوردر #${c.orderNumber}${c.usedDate ? ' — ' + formatDate(c.usedDate) : ''}` : ''}`
-    },
-    en: {
-      eyebrow: 'FlowerMad Loyalty Program',
-      title: 'Your points grow automatically',
-      subtitle: 'Every 10 EGP on any order = 1 point. Enter the email you order with and see your balance.',
-      emailPlaceholder: 'example@email.com',
-      checkButton: 'Show my balance',
-      historyButton: 'My codes',
-      tiersTitle: 'Redemption tiers',
-      balanceLabel: 'Available points',
-      invalidEmail: 'Enter a valid email first 🙏',
-      loadingBalance: 'Fetching your balance...',
-      emptyUser: 'No points found for this email yet.<br>Order a package and start collecting points 🌹',
-      canRedeem: (discount) => `You can redeem now for a <b>${discount} EGP</b> discount`,
-      nextTier: (points) => `Need <b>${points} points</b> more to reach the next reward`,
-      redeemLoading: 'Sending a verification code to your email...',
-      otpPrompt: 'We sent you a 6-digit code to your email, enter it here:',
-      otpPlaceholder: '——   ——   ——',
-      otpConfirm: 'Confirm',
-      otpResend: 'Didn’t get the code? Send it again',
-      invalidOtp: 'Enter the 6-digit code',
-      verifyingOtp: 'Verifying the code...',
-      couponTitle: 'Your discount code',
-      couponNote: (discount, remainingPoints) =>
-        `${discount} EGP off — paste it in the coupon field at checkout.<br>Your remaining balance: ${remainingPoints} points.`,
-      copyButton: 'Copy code',
-      copied: 'Copied ✓',
-      copyButtonDefault: 'Copy code',
-      connectionError: 'Connection issue, please try again later',
-      sendOtpError: 'Failed to send the code, please try again',
-      errorRetry: 'Something went wrong, please try again',
-      redeemButton: 'Redeem now',
-      historyEmailRequired: 'Enter your email first to show your codes 🙏',
-      historyLoading: 'Fetching your codes...',
-      noHistory: 'No redemptions yet. When you collect enough points you can redeem above.',
-      couponsLabel: 'Your codes',
-      activeBadge: 'Active',
-      usedBadge: 'Used',
-      tierPoints: (points) => `${points} points`,
-      tierDiscount: (discount) => `${discount} EGP off`,
-      couponMeta: (c, formatDate) =>
-        `${c.discount} EGP off — ${c.pointsUsed} points${c.orderNumber ? `<br>Used on order #${c.orderNumber}${c.usedDate ? ' — ' + formatDate(c.usedDate) : ''}` : ''}`
-    }
-  };
-
-  let currentLocale = 'en';
-
-  function detectLocale(root) {
-    return 'en';
-  }
-
-  function formatDate(dateString, locale) {
-    if (!dateString) return null;
-    const parsed = new Date(dateString.replace(' ', 'T').replace(' +0000', 'Z'));
-    if (isNaN(parsed)) return dateString.split(' ')[0];
-    return parsed.toLocaleDateString(locale === 'ar' ? 'ar-EG' : 'en-US', {
-      day: 'numeric',
-      month: 'short',
-      year: 'numeric'
-    });
-  }
-
-  // ---------- حقن الـ CSS مرة واحدة ----------
+  // ---------- Inject CSS once ----------
   function injectStyles() {
     if (document.getElementById('fm-loyalty-styles')) return;
     const style = document.createElement('style');
@@ -144,6 +40,7 @@
         --fm-rose-deep: #8C2C38; --fm-gold: #B8862F; --fm-sage: #4C6444; --fm-line: #E9DAD3;
         font-family: Tahoma, 'Segoe UI', sans-serif; color: var(--fm-ink);
         max-width: 480px; margin: 0 auto; box-sizing: border-box;
+        direction: ltr; text-align: left;
       }
       #fm-loyalty-root * { box-sizing: border-box; }
       #fm-loyalty-root .fm-card { background: #fff; border: 1px solid var(--fm-line); border-radius: 16px; padding: 24px; }
@@ -218,26 +115,25 @@
   }
 
   function render(root) {
-    const T = TEXTS[currentLocale];
     root.innerHTML = `
       <div class="fm-card">
-        <div class="fm-eyebrow">${T.eyebrow}</div>
-        <h1>${T.title}</h1>
-        <p class="fm-sub">${T.subtitle}</p>
+        <div class="fm-eyebrow">🌹 FlowerMad Loyalty Program</div>
+        <h1>Your points add up automatically</h1>
+        <p class="fm-sub">Every 10 EGP on any order = 1 point. Enter the email you order with to check your balance.</p>
         <div class="fm-row">
-          <input type="email" id="fm-email" placeholder="${T.emailPlaceholder}" />
-          <button class="fm-btn-primary" id="fm-check-btn">${T.checkButton}</button>
+          <input type="email" id="fm-email" placeholder="example@email.com" />
+          <button class="fm-btn-primary" id="fm-check-btn">Check My Balance</button>
         </div>
         <div class="fm-result" id="fm-result"></div>
         <div class="fm-tiers">
-          <div class="fm-tiers-title">${T.tiersTitle}</div>
+          <div class="fm-tiers-title">Redemption Tiers</div>
           ${TIERS.map(t => `
             <div class="fm-tier-row">
-              <span>${T.tierPoints(t.points)}</span>
-              <span>${T.tierDiscount(t.discount)}</span>
+              <span>${t.points} points</span>
+              <span>${t.discount} EGP off</span>
             </div>`).join('')}
         </div>
-        <button class="fm-history-link" id="fm-history-btn">${T.historyButton}</button>
+        <button class="fm-history-link" id="fm-history-btn">My Previous Codes</button>
       </div>
     `;
 
@@ -249,19 +145,18 @@
   }
 
   async function checkBalance() {
-    const T = TEXTS[currentLocale];
     const emailInput = document.getElementById('fm-email');
     const email = emailInput.value.trim();
     const resultBox = document.getElementById('fm-result');
 
     if (!email || !email.includes('@')) {
       resultBox.className = 'fm-result fm-show';
-      resultBox.innerHTML = `<div class="fm-error">${T.invalidEmail}</div>`;
+      resultBox.innerHTML = `<div class="fm-error">Please enter a valid email first 🙏</div>`;
       return;
     }
 
     resultBox.className = 'fm-result fm-show';
-    resultBox.innerHTML = `<div class="fm-loading">${T.loadingBalance}</div>`;
+    resultBox.innerHTML = `<div class="fm-loading">Fetching your balance...</div>`;
 
     try {
       const res = await fetch(`${APPS_SCRIPT_URL}?email=${encodeURIComponent(email)}`);
@@ -270,7 +165,8 @@
       if (!data.found) {
         resultBox.innerHTML = `
           <div class="fm-empty">
-            ${T.emptyUser}
+            We don't have any points under this email yet.<br>
+            Place your first order and start earning points 🌹
           </div>`;
         return;
       }
@@ -279,7 +175,7 @@
         <div class="fm-balance-block">
           <div>
             <div class="fm-balance-num">${data.points}</div>
-            <div class="fm-balance-label">${T.balanceLabel}</div>
+            <div class="fm-balance-label">points available</div>
           </div>
         </div>
         ${renderBloomTrack(data.points)}
@@ -287,12 +183,12 @@
 
       if (data.canRedeem) {
         html += `
-          <div class="fm-next">${T.canRedeem(data.eligibleDiscount)}</div>
-          <button class="fm-btn-gold" id="fm-redeem-btn">${T.redeemButton}</button>
+          <div class="fm-next">You can redeem now for <b>${data.eligibleDiscount} EGP off</b></div>
+          <button class="fm-btn-gold" id="fm-redeem-btn">Redeem My Points Now</button>
         `;
       } else if (data.pointsToNextTier) {
         html += `
-          <div class="fm-next">${T.nextTier(data.pointsToNextTier)}</div>
+          <div class="fm-next">You need <b>${data.pointsToNextTier} more points</b> to reach the next reward</div>
         `;
       }
 
@@ -303,32 +199,31 @@
         redeemBtn.addEventListener('click', () => redeemPoints(email));
       }
     } catch (err) {
-      resultBox.innerHTML = `<div class="fm-error">${T.connectionError}</div>`;
+      resultBox.innerHTML = `<div class="fm-error">Something went wrong connecting. Please try again shortly.</div>`;
     }
   }
 
   async function redeemPoints(email) {
-    const T = TEXTS[currentLocale];
     const resultBox = document.getElementById('fm-result');
-    resultBox.innerHTML = `<div class="fm-loading">${T.redeemLoading}</div>`;
+    resultBox.innerHTML = `<div class="fm-loading">Sending a verification code to your email...</div>`;
 
     try {
       const res = await fetch(`${APPS_SCRIPT_URL}?email=${encodeURIComponent(email)}&action=request-otp`);
       const data = await res.json();
 
       if (!data.success) {
-        resultBox.innerHTML = `<div class="fm-error">${T.sendOtpError}</div>`;
+        resultBox.innerHTML = `<div class="fm-error">There was a problem sending the code. Please try again.</div>`;
         return;
       }
 
       resultBox.innerHTML = `
         <div class="fm-otp-box">
-          <div style="font-size:14px;margin-bottom:10px;">${T.otpPrompt}</div>
+          <div style="font-size:14px;margin-bottom:10px;">We sent a 6-digit code to your email. Enter it here:</div>
           <div class="fm-row">
-            <input type="text" id="fm-otp-input" placeholder="${T.otpPlaceholder}" maxlength="6" inputmode="numeric" />
-            <button class="fm-btn-primary" id="fm-otp-confirm">${T.otpConfirm}</button>
+            <input type="text" id="fm-otp-input" placeholder="------" maxlength="6" inputmode="numeric" />
+            <button class="fm-btn-primary" id="fm-otp-confirm">Confirm</button>
           </div>
-          <button class="fm-resend-link" id="fm-otp-resend">${T.otpResend}</button>
+          <button class="fm-resend-link" id="fm-otp-resend">Didn't get the code? Resend</button>
         </div>
       `;
 
@@ -338,89 +233,96 @@
       });
       document.getElementById('fm-otp-resend').addEventListener('click', () => redeemPoints(email));
     } catch (err) {
-      resultBox.innerHTML = `<div class="fm-error">${T.connectionError}</div>`;
+      resultBox.innerHTML = `<div class="fm-error">Something went wrong connecting. Please try again shortly.</div>`;
     }
   }
 
   async function confirmOtp(email) {
-    const T = TEXTS[currentLocale];
     const otpInput = document.getElementById('fm-otp-input');
     const otp = otpInput.value.trim();
     const resultBox = document.getElementById('fm-result');
 
     if (!otp || otp.length !== 6) {
-      resultBox.innerHTML = `<div class="fm-error">${T.invalidOtp}</div>` + resultBox.innerHTML;
+      resultBox.innerHTML = `<div class="fm-error">Please enter the 6-digit code</div>` + resultBox.innerHTML;
       return;
     }
 
-    resultBox.innerHTML = `<div class="fm-loading">${T.verifyingOtp}</div>`;
+    resultBox.innerHTML = `<div class="fm-loading">Verifying your code...</div>`;
 
     try {
       const res = await fetch(`${APPS_SCRIPT_URL}?email=${encodeURIComponent(email)}&action=redeem&otp=${encodeURIComponent(otp)}`);
       const data = await res.json();
 
       if (!data.success) {
-        resultBox.innerHTML = `<div class="fm-error">${data.message || T.errorRetry}</div>`;
+        resultBox.innerHTML = `<div class="fm-error">${data.message || 'Something went wrong. Please try again.'}</div>`;
         return;
       }
 
       resultBox.innerHTML = `
         <div class="fm-coupon-box">
-          <div style="font-size:13px;color:var(--fm-ink-soft)">${T.couponTitle}</div>
+          <div style="font-size:13px;color:var(--fm-ink-soft)">Your discount code</div>
           <div class="fm-coupon-code">${data.couponCode}</div>
           <div class="fm-coupon-note">
-            ${T.couponNote(data.discount, data.remainingPoints)}
+            ${data.discount} EGP off — paste it in the coupon field at checkout.<br>
+            Remaining balance: ${data.remainingPoints} points.
           </div>
-          <button class="fm-copy-btn" id="fm-copy-btn">${T.copyButton}</button>
+          <button class="fm-copy-btn" id="fm-copy-btn">Copy Code</button>
         </div>
       `;
 
       document.getElementById('fm-copy-btn').addEventListener('click', function () {
         navigator.clipboard.writeText(data.couponCode);
-        this.textContent = T.copied;
-        setTimeout(() => { this.textContent = T.copyButtonDefault; }, 1800);
+        this.textContent = 'Copied ✓';
+        setTimeout(() => { this.textContent = 'Copy Code'; }, 1800);
       });
     } catch (err) {
-      resultBox.innerHTML = `<div class="fm-error">${T.connectionError}</div>`;
+      resultBox.innerHTML = `<div class="fm-error">Something went wrong connecting. Please try again shortly.</div>`;
     }
   }
 
   async function showHistory() {
-    const T = TEXTS[currentLocale];
     const emailInput = document.getElementById('fm-email');
     const email = emailInput.value.trim();
     const resultBox = document.getElementById('fm-result');
 
     if (!email || !email.includes('@')) {
       resultBox.className = 'fm-result fm-show';
-      resultBox.innerHTML = `<div class="fm-error">${T.historyEmailRequired}</div>`;
+      resultBox.innerHTML = `<div class="fm-error">Please enter your email first to view your codes 🙏</div>`;
       return;
     }
 
     resultBox.className = 'fm-result fm-show';
-    resultBox.innerHTML = `<div class="fm-loading">${T.historyLoading}</div>`;
+    resultBox.innerHTML = `<div class="fm-loading">Fetching your codes...</div>`;
 
     try {
       const res = await fetch(`${APPS_SCRIPT_URL}?email=${encodeURIComponent(email)}&action=history`);
       const data = await res.json();
 
       if (!data.coupons || data.coupons.length === 0) {
-        resultBox.innerHTML = `<div class="fm-empty">${T.noHistory}</div>`;
+        resultBox.innerHTML = `<div class="fm-empty">You haven't redeemed anything yet. Once you have enough points, you can redeem them above.</div>`;
         return;
       }
 
       const statusLabel = (status) => status === 'ACTIVE'
-        ? `<span class="fm-badge fm-badge-active">${T.activeBadge}</span>`
-        : `<span class="fm-badge fm-badge-used">${T.usedBadge}</span>`;
+        ? '<span class="fm-badge fm-badge-active">Active</span>'
+        : '<span class="fm-badge fm-badge-used">Used</span>';
+
+      const formatDate = (d) => {
+        if (!d) return null;
+        const parsed = new Date(d.replace(' ', 'T').replace(' +0000', 'Z'));
+        if (isNaN(parsed)) return d.split(' ')[0];
+        return parsed.toLocaleDateString('en-US', { day: 'numeric', month: 'short', year: 'numeric' });
+      };
 
       resultBox.innerHTML = `
-        <div style="font-size:13px;font-weight:700;color:var(--fm-ink-soft);margin-bottom:6px;">${T.couponsLabel}</div>
+        <div style="font-size:13px;font-weight:700;color:var(--fm-ink-soft);margin-bottom:6px;">Your Codes</div>
         ${data.coupons.map(c => `
           <div class="fm-history-item">
             <div>
               <div class="fm-history-code">${c.couponCode}</div>
               <div class="fm-history-meta">
-                ${T.couponMeta(c, d => formatDate(d, currentLocale))}
+                ${c.discount} EGP off — ${c.pointsUsed} points
+                ${c.orderNumber ? `<br>Used on order #${c.orderNumber}${c.usedDate ? ' — ' + formatDate(c.usedDate) : ''}` : ''}
               </div>
             </div>
             ${statusLabel(c.status)}
@@ -428,18 +330,15 @@
         `).join('')}
       `;
     } catch (err) {
-      resultBox.innerHTML = `<div class="fm-error">${T.connectionError}</div>`;
+      resultBox.innerHTML = `<div class="fm-error">Something went wrong connecting. Please try again shortly.</div>`;
     }
   }
 
-  // ---------- تشغيل الويدجت ----------
+  // ---------- Boot the widget ----------
   function init() {
     const root = document.getElementById('fm-loyalty-root');
-    if (!root) return; // الصفحة دي مفيهاش الويدجت، متعملش حاجة
+    if (!root) return; // this page doesn't have the widget, do nothing
     injectStyles();
-    currentLocale = detectLocale(root);
-    root.lang = currentLocale;
-    root.dir = currentLocale === 'ar' ? 'rtl' : 'ltr';
     render(root);
   }
 
