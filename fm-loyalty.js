@@ -115,11 +115,11 @@
     }
   };
 
-  let currentLang = 'ar';
+  let currentLang = 'en';
   try {
     const saved = localStorage.getItem('fm-loyalty-lang');
     if (saved === 'ar' || saved === 'en') currentLang = saved;
-  } catch (e) { /* localStorage may be unavailable, default to ar */ }
+  } catch (e) { /* localStorage may be unavailable, default to en */ }
 
   function t(key) {
     return STRINGS[currentLang][key];
