@@ -24,7 +24,7 @@
    ========================================================== */
 (function () {
   // ⚠️ Replace this with your Apps Script Web App URL
-  const APPS_SCRIPT_URL = 'PASTE_YOUR_WEB_APP_URL_HERE';
+  const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxzdwDo5gs1ZlHyx-SEQS_nrqBdCCcchGdjI87Feys49XFs5Ot0wppclKZDG9yoVO21rA/exec';
 
   const TIERS = [
     { points: 100, discount: 30 },
@@ -57,7 +57,7 @@
       checkBtn: 'اعرض رصيدي',
       tiersTitle: 'درجات الاستبدال',
       tierRow: (index, points, discount) => `<span class="fm-tier-num">${index + 1}</span><span class="fm-tier-pts">${points} نقطة</span><span class="fm-tier-discount">خصم ${discount} جنيه</span>`,
-      historyBtn: 'أكوادي السابقة',
+      historyBtn: 'كوبوناتي السابقة',
       invalidEmail: 'اكتب إيميل صحيح الأول 🙏',
       fetchingBalance: 'بنجيب رصيدك...',
       notFound: 'لسه معندناش نقاط باسم الإيميل ده.<br>اطلب أول باقة وابدأ تجمع نقاطك 🌹',
