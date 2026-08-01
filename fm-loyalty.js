@@ -1,5 +1,5 @@
 /* ==========================================================
-   FlowerMad — Loyalty Widget (Bilingual: Arabic / English)
+   FlowerMad — Loyalty Widget (Bilingual, distinctive redesign)
    ==========================================================
    Usage:
    1. Set APPS_SCRIPT_URL below to your Apps Script Web App URL.
@@ -9,12 +9,17 @@
       <div id="fm-loyalty-root"></div>
       <script src="https://YOUR-USERNAME.github.io/YOUR-REPO/fm-loyalty.js"></script>
 
-   The widget remembers the visitor's language choice (localStorage)
-   and defaults to Arabic on first visit.
+   Design notes:
+   - Palette is unchanged (rose / gold / sage / ink), only the
+     typography, layout and motion were redesigned.
+   - Fonts (Fraunces + Inter for EN, Markazi Text + Cairo for AR)
+     are loaded dynamically by this script — nothing static needs
+     to be added to the Ecwid HTML.
+   - Respects prefers-reduced-motion.
    ========================================================== */
 (function () {
   // ⚠️ Replace this with your Apps Script Web App URL
-  const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxzdwDo5gs1ZlHyx-SEQS_nrqBdCCcchGdjI87Feys49XFs5Ot0wppclKZDG9yoVO21rA/exec';
+  const APPS_SCRIPT_URL = 'PASTE_YOUR_WEB_APP_URL_HERE';
 
   const TIERS = [
     { points: 100, discount: 30 },
@@ -31,18 +36,20 @@
   };
   const BLOOM_SEQUENCE = ['bud', 'half', 'open', 'full'];
 
+  const MINI_BUD_ICON = '<svg viewBox="0 0 32 32" fill="none"><path d="M16 30V16" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/><path d="M16 16C16 16 9 14 9 8.5C9 4.8 12.3 2 16 2C19.7 2 23 4.8 23 8.5C23 14 16 16 16 16Z" fill="currentColor"/></svg>';
+
   // ---------- Language strings ----------
   const STRINGS = {
     ar: {
       dir: 'rtl',
       dateLocale: 'ar-EG',
-      eyebrow: '🌹 برنامج نقاط FlowerMad',
-      heading: 'نقاطك بتتجمع من نفسها',
+      eyebrow: 'برنامج نقاط FlowerMad',
+      heading: 'نقاطك بتتفتّح زي الورد',
       sub: 'كل 10 جنيه في أي أوردر = نقطة. اكتب إيميلك اللي بتطلب بيه وشوف رصيدك.',
       emailPlaceholder: 'example@email.com',
       checkBtn: 'اعرض رصيدي',
       tiersTitle: 'درجات الاستبدال',
-      tierRow: (points, discount) => `<span>${points} نقطة</span><span>خصم ${discount} جنيه</span>`,
+      tierRow: (index, points, discount) => `<span class="fm-tier-num">${String(index + 1).padStart(2, '0')}</span><span class="fm-tier-pts">${points} نقطة</span><span class="fm-tier-discount">خصم ${discount} جنيه</span>`,
       historyBtn: 'أكوادي السابقة',
       invalidEmail: 'اكتب إيميل صحيح الأول 🙏',
       fetchingBalance: 'بنجيب رصيدك...',
@@ -76,13 +83,13 @@
     en: {
       dir: 'ltr',
       dateLocale: 'en-US',
-      eyebrow: '🌹 FlowerMad Loyalty Program',
-      heading: 'Your points add up automatically',
+      eyebrow: 'FlowerMad Loyalty Program',
+      heading: 'Your points bloom on their own',
       sub: 'Every 10 EGP on any order = 1 point. Enter the email you order with to check your balance.',
       emailPlaceholder: 'example@email.com',
       checkBtn: 'Check My Balance',
       tiersTitle: 'Redemption Tiers',
-      tierRow: (points, discount) => `<span>${points} points</span><span>${discount} EGP off</span>`,
+      tierRow: (index, points, discount) => `<span class="fm-tier-num">${String(index + 1).padStart(2, '0')}</span><span class="fm-tier-pts">${points} pts</span><span class="fm-tier-discount">${discount} EGP off</span>`,
       historyBtn: 'My Previous Codes',
       invalidEmail: 'Please enter a valid email first 🙏',
       fetchingBalance: 'Fetching your balance...',
@@ -125,6 +132,21 @@
     return STRINGS[currentLang][key];
   }
 
+  function prefersReducedMotion() {
+    return typeof window.matchMedia === 'function' &&
+      window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  }
+
+  // ---------- Load display/body fonts once ----------
+  function injectFonts() {
+    if (document.getElementById('fm-loyalty-fonts')) return;
+    const link = document.createElement('link');
+    link.id = 'fm-loyalty-fonts';
+    link.rel = 'stylesheet';
+    link.href = 'https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600;9..144,700&family=Inter:wght@400;500;600;700&family=Markazi+Text:wght@600;700&family=Cairo:wght@400;600;700&display=swap';
+    document.head.appendChild(link);
+  }
+
   // ---------- Inject CSS once ----------
   function injectStyles() {
     if (document.getElementById('fm-loyalty-styles')) return;
@@ -133,80 +155,212 @@
     style.textContent = `
       #fm-loyalty-root {
         --fm-ink: #3A2436; --fm-ink-soft: #7A6670; --fm-rose: #B23A48;
-        --fm-rose-deep: #8C2C38; --fm-gold: #B8862F; --fm-sage: #4C6444; --fm-line: #E9DAD3;
-        font-family: 'Cairo', Tahoma, 'Segoe UI', sans-serif; color: var(--fm-ink);
+        --fm-rose-deep: #8C2C38; --fm-gold: #B8862F; --fm-sage: #4C6444;
+        --fm-line: #E9DAD3; --fm-blush: #FBF3EF;
+        --fm-display: 'Markazi Text', Georgia, serif;
+        --fm-body: 'Cairo', Tahoma, sans-serif;
+        color: var(--fm-ink); font-family: var(--fm-body);
         max-width: 480px; margin: 0 auto; box-sizing: border-box;
       }
+      #fm-loyalty-root[lang="en"] {
+        --fm-display: 'Fraunces', Georgia, serif;
+        --fm-body: 'Inter', 'Segoe UI', sans-serif;
+      }
       #fm-loyalty-root * { box-sizing: border-box; }
-      #fm-loyalty-root .fm-card { background: #fff; border: 1px solid var(--fm-line); border-radius: 16px; padding: 24px; position: relative; }
+
+      @keyframes fm-rise {
+        from { opacity: 0; transform: translateY(10px); }
+        to { opacity: 1; transform: translateY(0); }
+      }
+      @keyframes fm-breathe {
+        0%, 100% { transform: scale(1); opacity: .85; }
+        50% { transform: scale(1.12); opacity: 1; }
+      }
+      @keyframes fm-unfurl {
+        from { opacity: 0; transform: scaleY(.85); }
+        to { opacity: 1; transform: scaleY(1); }
+      }
+      @keyframes fm-pop {
+        0% { transform: scale(.85); opacity: 0; }
+        60% { transform: scale(1.08); opacity: 1; }
+        100% { transform: scale(1); }
+      }
+      @media (prefers-reduced-motion: reduce) {
+        #fm-loyalty-root * { animation: none !important; transition: none !important; }
+      }
+
+      #fm-loyalty-root .fm-card {
+        position: relative;
+        background: linear-gradient(165deg, #fff 55%, var(--fm-blush) 100%);
+        border: 1px solid var(--fm-line);
+        border-radius: 30px 10px 30px 10px;
+        padding: 30px 26px 26px;
+        overflow: hidden;
+        animation: fm-rise .5s ease both;
+      }
+      #fm-loyalty-root .fm-card::before {
+        content: '';
+        position: absolute; inset-block-start: 0; inset-inline-start: 0; inset-inline-end: 0;
+        height: 4px;
+        background: linear-gradient(90deg, var(--fm-gold), var(--fm-rose) 55%, var(--fm-rose-deep));
+      }
+
+      #fm-loyalty-root .fm-eyebrow {
+        display: flex; align-items: center; gap: 6px;
+        font-size: 12.5px; letter-spacing: .09em; text-transform: uppercase;
+        color: var(--fm-rose); font-weight: 700; margin-bottom: 10px;
+        animation: fm-rise .5s ease .05s both;
+      }
+      #fm-loyalty-root .fm-eyebrow-icon { width: 15px; height: 15px; color: var(--fm-gold); animation: fm-breathe 3.2s ease-in-out infinite; }
+
+      #fm-loyalty-root h1 {
+        font-family: var(--fm-display); font-weight: 600; font-size: 28px;
+        letter-spacing: -0.01em; line-height: 1.15; margin: 0 0 8px;
+        animation: fm-rise .5s ease .1s both;
+      }
+      #fm-loyalty-root .fm-sub {
+        font-size: 14px; color: var(--fm-ink-soft); margin: 0 0 22px; line-height: 1.7;
+        animation: fm-rise .5s ease .15s both;
+      }
+
+      #fm-loyalty-root .fm-row { display: flex; gap: 8px; animation: fm-rise .5s ease .2s both; }
+      #fm-loyalty-root input[type="email"], #fm-loyalty-root input[type="text"] {
+        flex: 1; padding: 12px 15px; border-radius: 12px; border: 1.5px solid var(--fm-line);
+        font-size: 15px; font-family: var(--fm-body); background: #FDFAF8; color: var(--fm-ink);
+        transition: border-color .15s ease, box-shadow .15s ease;
+      }
+      #fm-loyalty-root input:focus {
+        outline: none; border-color: var(--fm-rose); box-shadow: 0 0 0 3px rgba(178,58,72,.12);
+      }
+      #fm-loyalty-root button {
+        font-family: var(--fm-body); font-weight: 700; font-size: 14px; border: none;
+        border-radius: 12px; padding: 12px 20px; cursor: pointer;
+        transition: transform .12s ease, box-shadow .12s ease, filter .12s ease;
+      }
+      #fm-loyalty-root button:active { transform: scale(.97); }
+      #fm-loyalty-root button:disabled { opacity: .55; cursor: default; }
+      #fm-loyalty-root .fm-btn-primary { background: var(--fm-rose); color: #fff; }
+      #fm-loyalty-root .fm-btn-primary:hover { filter: brightness(1.06); box-shadow: 0 6px 16px -6px rgba(178,58,72,.55); transform: translateY(-1px); }
+      #fm-loyalty-root .fm-btn-gold { background: var(--fm-gold); color: #fff; width: 100%; margin-top: 16px; padding: 14px; }
+      #fm-loyalty-root .fm-btn-gold:hover { filter: brightness(1.06); box-shadow: 0 6px 16px -6px rgba(184,134,47,.55); transform: translateY(-1px); }
+
+      #fm-loyalty-root .fm-result { margin-top: 22px; display: none; }
+      #fm-loyalty-root .fm-result.fm-show { display: block; animation: fm-unfurl .35s ease both; transform-origin: top; }
+
+      #fm-loyalty-root .fm-balance-block {
+        display: flex; align-items: baseline; justify-content: space-between;
+        border-block: 1px dashed var(--fm-line); padding: 18px 0; margin-bottom: 18px;
+      }
+      #fm-loyalty-root .fm-balance-num {
+        font-family: var(--fm-display); font-size: 46px; font-weight: 600; line-height: 1;
+        background: linear-gradient(135deg, var(--fm-rose-deep), var(--fm-gold));
+        -webkit-background-clip: text; background-clip: text; color: transparent;
+      }
+      #fm-loyalty-root .fm-balance-label { font-size: 13px; color: var(--fm-ink-soft); }
+
+      #fm-loyalty-root .fm-bloom-track { position: relative; display: flex; justify-content: space-between; margin: 8px 0 10px; padding-block-start: 3px; }
+      #fm-loyalty-root .fm-bloom-stem {
+        position: absolute; inset-inline-start: 22px; inset-inline-end: 22px; inset-block-start: 12px;
+        height: 2px; background: var(--fm-line); overflow: hidden; border-radius: 2px;
+      }
+      #fm-loyalty-root .fm-bloom-stem-fill {
+        position: absolute; inset-inline-start: 0; inset-block-start: 0; height: 100%;
+        background: linear-gradient(90deg, var(--fm-sage), var(--fm-gold));
+        width: var(--fm-fill, 0%); transition: width .7s cubic-bezier(.22,.9,.3,1);
+      }
+      #fm-loyalty-root .fm-bloom { position: relative; z-index: 1; display: flex; flex-direction: column; align-items: center; gap: 6px; width: 44px; }
+      #fm-loyalty-root .fm-bloom svg { width: 26px; height: 26px; }
+      #fm-loyalty-root .fm-bloom .fm-bloom-pts { font-size: 11px; color: var(--fm-ink-soft); font-weight: 700; }
+      #fm-loyalty-root .fm-bloom.fm-locked svg { opacity: .3; }
+      #fm-loyalty-root .fm-bloom.fm-locked .fm-bloom-pts { opacity: .5; }
+      #fm-loyalty-root .fm-bloom:not(.fm-locked) svg { animation: fm-pop .5s ease both; }
+
+      #fm-loyalty-root .fm-next { font-size: 13px; color: var(--fm-ink-soft); text-align: center; margin-top: 6px; }
+      #fm-loyalty-root .fm-next b { color: var(--fm-ink); }
+
+      #fm-loyalty-root .fm-tiers { margin-top: 22px; }
+      #fm-loyalty-root .fm-tiers-title {
+        font-size: 12.5px; font-weight: 700; letter-spacing: .07em; text-transform: uppercase;
+        color: var(--fm-ink-soft); margin-bottom: 10px;
+      }
+      #fm-loyalty-root .fm-tier-row {
+        display: flex; align-items: center; gap: 12px; font-size: 14px;
+        padding: 9px 0; border-bottom: 1px solid var(--fm-blush);
+      }
+      #fm-loyalty-root .fm-tier-row:last-child { border-bottom: none; }
+      #fm-loyalty-root .fm-tier-num {
+        font-family: var(--fm-display); font-weight: 600; font-size: 15px; color: var(--fm-gold); min-width: 22px;
+      }
+      #fm-loyalty-root .fm-tier-pts { flex: 1; color: var(--fm-ink-soft); }
+      #fm-loyalty-root .fm-tier-discount { font-weight: 700; color: var(--fm-sage); }
+
+      #fm-loyalty-root .fm-coupon-box {
+        position: relative; background: var(--fm-blush); border: 1.5px dashed var(--fm-gold);
+        border-radius: 14px; padding: 20px; text-align: center; margin-top: 16px;
+        animation: fm-pop .4s ease both;
+      }
+      #fm-loyalty-root .fm-coupon-code {
+        font-family: var(--fm-display); font-size: 26px; font-weight: 700;
+        letter-spacing: .06em; color: var(--fm-rose-deep); margin: 6px 0 10px;
+      }
+      #fm-loyalty-root .fm-coupon-note { font-size: 13px; color: var(--fm-ink-soft); line-height: 1.6; }
+      #fm-loyalty-root .fm-copy-btn {
+        margin-top: 10px; background: transparent; border: 1.5px solid var(--fm-gold);
+        color: var(--fm-gold); padding: 8px 16px; font-size: 13px;
+      }
+      #fm-loyalty-root .fm-copy-btn:hover { background: var(--fm-gold); color: #fff; }
+
+      #fm-loyalty-root .fm-empty, #fm-loyalty-root .fm-error {
+        text-align: center; padding: 18px 8px; font-size: 14px; color: var(--fm-ink-soft); line-height: 1.8;
+      }
+      #fm-loyalty-root .fm-error { color: var(--fm-rose-deep); }
+      #fm-loyalty-root .fm-loading { text-align: center; padding: 20px; font-size: 14px; color: var(--fm-ink-soft); }
+
+      #fm-loyalty-root .fm-history-link, #fm-loyalty-root .fm-resend-link {
+        display: block; text-align: center; margin-top: 14px; font-size: 13px; color: var(--fm-ink-soft);
+        background: none; border: none; cursor: pointer; width: 100%; padding: 6px;
+        position: relative;
+      }
+      #fm-loyalty-root .fm-history-link::after, #fm-loyalty-root .fm-resend-link::after {
+        content: ''; display: block; width: 0; height: 1px; background: var(--fm-rose);
+        margin-inline: auto; transition: width .2s ease;
+      }
+      #fm-loyalty-root .fm-history-link:hover::after, #fm-loyalty-root .fm-resend-link:hover::after { width: 60%; }
+
+      #fm-loyalty-root .fm-history-item {
+        display: flex; justify-content: space-between; align-items: center;
+        padding: 11px 0; border-bottom: 1px solid var(--fm-blush); font-size: 13px;
+      }
+      #fm-loyalty-root .fm-history-code { font-family: var(--fm-display); font-weight: 700; font-size: 16px; }
+      #fm-loyalty-root .fm-history-meta { font-size: 11.5px; color: var(--fm-ink-soft); }
+      #fm-loyalty-root .fm-badge { font-size: 11px; font-weight: 700; padding: 4px 11px; border-radius: 999px; }
+      #fm-loyalty-root .fm-badge-active { background: #E9F0E5; color: var(--fm-sage); }
+      #fm-loyalty-root .fm-badge-used { background: #F1E9EB; color: #A08A93; }
+
       #fm-loyalty-root .fm-lang-switch {
-        position: absolute; top: 16px; ${currentLang === 'ar' ? 'left: 16px;' : 'right: 16px;'}
-        display: flex; border: 1.5px solid var(--fm-line); border-radius: 999px; overflow: hidden; font-size: 11px;
+        position: absolute; inset-block-start: 18px; inset-inline-end: 20px;
+        display: flex; border: 1.5px solid var(--fm-line); border-radius: 999px; overflow: hidden; font-size: 11px; z-index: 2;
       }
       #fm-loyalty-root .fm-lang-btn {
         border: none; background: #fff; color: var(--fm-ink-soft); padding: 4px 10px; cursor: pointer; font-weight: 700;
       }
       #fm-loyalty-root .fm-lang-btn.fm-lang-active { background: var(--fm-rose); color: #fff; }
-      #fm-loyalty-root .fm-eyebrow { font-size: 13px; color: var(--fm-rose); font-weight: 700; margin-bottom: 6px; padding-${currentLang === 'ar' ? 'left' : 'right'}: 70px; }
-      #fm-loyalty-root h1 { font-size: 26px; font-weight: 700; margin: 0 0 6px; }
-      #fm-loyalty-root .fm-sub { font-size: 14px; color: var(--fm-ink-soft); margin: 0 0 20px; line-height: 1.7; }
-      #fm-loyalty-root .fm-row { display: flex; gap: 8px; }
-      #fm-loyalty-root input[type="email"], #fm-loyalty-root input[type="text"] {
-        flex: 1; padding: 12px 14px; border-radius: 10px; border: 1.5px solid var(--fm-line);
-        font-size: 15px; background: #FDFAF8; color: var(--fm-ink);
-      }
-      #fm-loyalty-root button { font-weight: 700; font-size: 14px; border: none; border-radius: 10px; padding: 12px 18px; cursor: pointer; }
-      #fm-loyalty-root button:disabled { opacity: 0.55; }
-      #fm-loyalty-root .fm-btn-primary { background: var(--fm-rose); color: #fff; }
-      #fm-loyalty-root .fm-btn-gold { background: var(--fm-gold); color: #fff; width: 100%; margin-top: 14px; padding: 14px; }
-      #fm-loyalty-root .fm-result { margin-top: 20px; display: none; }
-      #fm-loyalty-root .fm-result.fm-show { display: block; }
-      #fm-loyalty-root .fm-balance-block { display: flex; justify-content: space-between; border-top: 1px dashed var(--fm-line); border-bottom: 1px dashed var(--fm-line); padding: 16px 0; margin-bottom: 16px; }
-      #fm-loyalty-root .fm-balance-num { font-size: 40px; font-weight: 700; color: var(--fm-rose-deep); }
-      #fm-loyalty-root .fm-balance-label { font-size: 13px; color: var(--fm-ink-soft); }
-      #fm-loyalty-root .fm-bloom-track { display: flex; justify-content: space-between; margin: 6px 0 8px; }
-      #fm-loyalty-root .fm-bloom { display: flex; flex-direction: column; align-items: center; gap: 6px; width: 44px; }
-      #fm-loyalty-root .fm-bloom svg { width: 28px; height: 28px; }
-      #fm-loyalty-root .fm-bloom .fm-bloom-pts { font-size: 11px; color: var(--fm-ink-soft); font-weight: 700; }
-      #fm-loyalty-root .fm-bloom.fm-locked svg { opacity: 0.35; }
-      #fm-loyalty-root .fm-bloom.fm-locked .fm-bloom-pts { opacity: 0.5; }
-      #fm-loyalty-root .fm-next { font-size: 13px; color: var(--fm-ink-soft); text-align: center; margin-top: 4px; }
-      #fm-loyalty-root .fm-next b { color: var(--fm-ink); }
-      #fm-loyalty-root .fm-tiers { margin-top: 20px; border-top: 1px solid var(--fm-line); padding-top: 14px; }
-      #fm-loyalty-root .fm-tiers-title { font-size: 13px; font-weight: 700; color: var(--fm-ink-soft); margin-bottom: 8px; }
-      #fm-loyalty-root .fm-tier-row { display: flex; justify-content: space-between; font-size: 14px; padding: 6px 0; border-bottom: 1px solid #F3E9E4; }
-      #fm-loyalty-root .fm-tier-row span:last-child { font-weight: 700; color: var(--fm-sage); }
-      #fm-loyalty-root .fm-coupon-box { background: #FBF3EF; border: 1.5px dashed var(--fm-gold); border-radius: 12px; padding: 16px; text-align: center; margin-top: 14px; }
-      #fm-loyalty-root .fm-coupon-code { font-size: 24px; font-weight: 700; color: var(--fm-rose-deep); margin: 4px 0 8px; }
-      #fm-loyalty-root .fm-coupon-note { font-size: 13px; color: var(--fm-ink-soft); line-height: 1.6; }
-      #fm-loyalty-root .fm-copy-btn { margin-top: 8px; background: transparent; border: 1.5px solid var(--fm-gold); color: var(--fm-gold); padding: 8px 14px; font-size: 13px; }
-      #fm-loyalty-root .fm-empty, #fm-loyalty-root .fm-error { text-align: center; padding: 16px 8px; font-size: 14px; color: var(--fm-ink-soft); line-height: 1.8; }
-      #fm-loyalty-root .fm-error { color: var(--fm-rose-deep); }
-      #fm-loyalty-root .fm-loading { text-align: center; padding: 18px; font-size: 14px; color: var(--fm-ink-soft); }
-      #fm-loyalty-root .fm-history-link, #fm-loyalty-root .fm-resend-link {
-        display: block; text-align: center; margin-top: 12px; font-size: 13px; color: var(--fm-ink-soft);
-        text-decoration: underline; background: none; border: none; cursor: pointer; width: 100%; padding: 6px;
-      }
-      #fm-loyalty-root .fm-history-item { display: flex; justify-content: space-between; align-items: center; padding: 10px 0; border-bottom: 1px solid #F3E9E4; font-size: 13px; }
-      #fm-loyalty-root .fm-history-code { font-weight: 700; font-size: 15px; }
-      #fm-loyalty-root .fm-history-meta { font-size: 11.5px; color: var(--fm-ink-soft); }
-      #fm-loyalty-root .fm-badge { font-size: 11px; font-weight: 700; padding: 4px 10px; border-radius: 999px; }
-      #fm-loyalty-root .fm-badge-active { background: #E9F0E5; color: var(--fm-sage); }
-      #fm-loyalty-root .fm-badge-used { background: #F1E9EB; color: #A08A93; }
     `;
     document.head.appendChild(style);
   }
 
   function bloomStageIndex(points) {
     let unlocked = 0;
-    TIERS.forEach(t => { if (points >= t.points) unlocked++; });
+    TIERS.forEach(tier => { if (points >= tier.points) unlocked++; });
     return unlocked;
   }
 
   function renderBloomTrack(points) {
     const unlocked = bloomStageIndex(points);
+    const fillPct = (unlocked / TIERS.length) * 100;
     return `
       <div class="fm-bloom-track">
+        <div class="fm-bloom-stem"><div class="fm-bloom-stem-fill" style="--fm-fill:${fillPct}%"></div></div>
         ${TIERS.map((tier, i) => `
           <div class="fm-bloom ${i < unlocked ? '' : 'fm-locked'}">
             ${BLOOM_ICONS[BLOOM_SEQUENCE[i]]}
@@ -217,16 +371,28 @@
     `;
   }
 
+  function animateCountUp(el, endValue) {
+    if (prefersReducedMotion() || !endValue) {
+      el.textContent = endValue;
+      return;
+    }
+    const duration = 800;
+    const startTime = performance.now();
+    function step(now) {
+      const progress = Math.min((now - startTime) / duration, 1);
+      const eased = 1 - Math.pow(1 - progress, 3);
+      el.textContent = Math.round(endValue * eased);
+      if (progress < 1) requestAnimationFrame(step);
+    }
+    requestAnimationFrame(step);
+  }
+
   let rootEl = null;
 
   function switchLang(lang) {
     if (lang === currentLang) return;
     currentLang = lang;
     try { localStorage.setItem('fm-loyalty-lang', lang); } catch (e) { /* ignore */ }
-    // إعادة بناء الـ CSS عشان اتجاه الزرار يتظبط مع اللغة الجديدة
-    const oldStyle = document.getElementById('fm-loyalty-styles');
-    if (oldStyle) oldStyle.remove();
-    injectStyles();
     render(rootEl);
   }
 
@@ -241,7 +407,7 @@
           <button class="fm-lang-btn ${currentLang === 'ar' ? 'fm-lang-active' : ''}" data-lang="ar">AR</button>
           <button class="fm-lang-btn ${currentLang === 'en' ? 'fm-lang-active' : ''}" data-lang="en">EN</button>
         </div>
-        <div class="fm-eyebrow">${t('eyebrow')}</div>
+        <div class="fm-eyebrow"><span class="fm-eyebrow-icon">${MINI_BUD_ICON}</span>${t('eyebrow')}</div>
         <h1>${t('heading')}</h1>
         <p class="fm-sub">${t('sub')}</p>
         <div class="fm-row">
@@ -251,7 +417,7 @@
         <div class="fm-result" id="fm-result"></div>
         <div class="fm-tiers">
           <div class="fm-tiers-title">${t('tiersTitle')}</div>
-          ${TIERS.map(tier => `<div class="fm-tier-row">${t('tierRow')(tier.points, tier.discount)}</div>`).join('')}
+          ${TIERS.map((tier, i) => `<div class="fm-tier-row">${t('tierRow')(i, tier.points, tier.discount)}</div>`).join('')}
         </div>
         <button class="fm-history-link" id="fm-history-btn">${t('historyBtn')}</button>
       </div>
@@ -294,7 +460,7 @@
       let html = `
         <div class="fm-balance-block">
           <div>
-            <div class="fm-balance-num">${data.points}</div>
+            <div class="fm-balance-num" id="fm-balance-num">0</div>
             <div class="fm-balance-label">${t('pointsAvailable')}</div>
           </div>
         </div>
@@ -311,6 +477,7 @@
       }
 
       resultBox.innerHTML = html;
+      animateCountUp(document.getElementById('fm-balance-num'), data.points);
 
       const redeemBtn = document.getElementById('fm-redeem-btn');
       if (redeemBtn) {
@@ -430,7 +597,7 @@
       };
 
       resultBox.innerHTML = `
-        <div style="font-size:13px;font-weight:700;color:var(--fm-ink-soft);margin-bottom:6px;">${t('yourCodesTitle')}</div>
+        <div style="font-size:13px;font-weight:700;color:var(--fm-ink-soft);margin-bottom:8px;">${t('yourCodesTitle')}</div>
         ${data.coupons.map(c => `
           <div class="fm-history-item">
             <div>
@@ -453,6 +620,7 @@
   function init() {
     const root = document.getElementById('fm-loyalty-root');
     if (!root) return; // this page doesn't have the widget, do nothing
+    injectFonts();
     injectStyles();
     render(root);
   }
