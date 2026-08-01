@@ -44,7 +44,7 @@
       dir: 'rtl',
       dateLocale: 'ar-EG',
       eyebrow: 'برنامج نقاط FlowerMad',
-      heading: 'نقاطك بتتفتّح زي الورد',
+      heading: 'رصيد نقاطك',
       sub: 'كل 10 جنيه في أي أوردر = نقطة. اكتب إيميلك اللي بتطلب بيه وشوف رصيدك.',
       emailPlaceholder: 'example@email.com',
       checkBtn: 'اعرض رصيدي',
@@ -84,7 +84,7 @@
       dir: 'ltr',
       dateLocale: 'en-US',
       eyebrow: 'FlowerMad Loyalty Program',
-      heading: 'Your points bloom on their own',
+      heading: 'Your Points Balance',
       sub: 'Every 10 EGP on any order = 1 point. Enter the email you order with to check your balance.',
       emailPlaceholder: 'example@email.com',
       checkBtn: 'Check My Balance',
@@ -143,7 +143,7 @@
     const link = document.createElement('link');
     link.id = 'fm-loyalty-fonts';
     link.rel = 'stylesheet';
-    link.href = 'https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600;9..144,700&family=Inter:wght@400;500;600;700&family=Markazi+Text:wght@600;700&family=Cairo:wght@400;600;700&display=swap';
+    link.href = 'https://fonts.googleapis.com/css2?family=El+Messiri:wght@500;600;700&family=Almarai:wght@400;700;800&family=Newsreader:opsz,wght@6..72,500;6..72,600;6..72,700&family=Work+Sans:wght@400;500;600;700&display=swap';
     document.head.appendChild(link);
   }
 
@@ -157,14 +157,14 @@
         --fm-ink: #3A2436; --fm-ink-soft: #7A6670; --fm-rose: #B23A48;
         --fm-rose-deep: #8C2C38; --fm-gold: #B8862F; --fm-sage: #4C6444;
         --fm-line: #E9DAD3; --fm-blush: #FBF3EF;
-        --fm-display: 'Markazi Text', Georgia, serif;
-        --fm-body: 'Cairo', Tahoma, sans-serif;
+        --fm-display: 'El Messiri', Tahoma, sans-serif;
+        --fm-body: 'Almarai', Tahoma, sans-serif;
         color: var(--fm-ink); font-family: var(--fm-body);
         max-width: 480px; margin: 0 auto; box-sizing: border-box;
       }
       #fm-loyalty-root[lang="en"] {
-        --fm-display: 'Fraunces', Georgia, serif;
-        --fm-body: 'Inter', 'Segoe UI', sans-serif;
+        --fm-display: 'Newsreader', Georgia, serif;
+        --fm-body: 'Work Sans', 'Segoe UI', sans-serif;
       }
       #fm-loyalty-root * { box-sizing: border-box; }
 
@@ -252,9 +252,8 @@
         border-block: 1px dashed var(--fm-line); padding: 18px 0; margin-bottom: 18px;
       }
       #fm-loyalty-root .fm-balance-num {
-        font-family: var(--fm-display); font-size: 46px; font-weight: 600; line-height: 1;
-        background: linear-gradient(135deg, var(--fm-rose-deep), var(--fm-gold));
-        -webkit-background-clip: text; background-clip: text; color: transparent;
+        font-family: var(--fm-display); font-size: 46px; font-weight: 700; line-height: 1;
+        color: var(--fm-rose-deep);
       }
       #fm-loyalty-root .fm-balance-label { font-size: 13px; color: var(--fm-ink-soft); }
 
