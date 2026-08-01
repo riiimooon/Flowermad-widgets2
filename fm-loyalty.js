@@ -226,9 +226,10 @@
         font-size: 13.5px; color: var(--fm-ink-soft); margin: 0 0 26px; line-height: 1.7;
       }
 
-      #fm-loyalty-root .fm-row { display: flex; gap: 8px; }
+      #fm-loyalty-root .fm-row { display: flex; flex-direction: column; gap: 10px; }
+      #fm-loyalty-root .fm-row input[type="email"], #fm-loyalty-root .fm-row button { width: 100%; }
       #fm-loyalty-root input[type="email"], #fm-loyalty-root input[type="text"] {
-        flex: 1; padding: 12px 16px; border-radius: 999px; border: 1px solid var(--fm-line);
+        padding: 12px 16px; border-radius: 999px; border: 1px solid var(--fm-line);
         font-size: 14px; font-family: var(--fm-font); background: #fff; color: var(--fm-ink);
         transition: border-color .15s ease, box-shadow .15s ease;
       }
@@ -244,7 +245,7 @@
       #fm-loyalty-root button:hover { opacity: .85; }
       #fm-loyalty-root button:active { transform: scale(.98); }
       #fm-loyalty-root button:disabled { opacity: .5; cursor: default; }
-      #fm-loyalty-root .fm-btn-primary { background: var(--fm-ink); color: var(--fm-cream); }
+      #fm-loyalty-root .fm-btn-primary { background: var(--fm-navy); color: var(--fm-cream); }
       #fm-loyalty-root .fm-btn-gold { background: var(--fm-pink); color: var(--fm-cream); width: 100%; margin-top: 18px; padding: 15px; font-size: 13px; }
       #fm-loyalty-root[lang="ar"] .fm-btn-gold { font-size: 14px; }
 
@@ -255,7 +256,7 @@
         display: flex; align-items: baseline; gap: 10px; padding-bottom: 18px;
       }
       #fm-loyalty-root .fm-balance-num {
-        font-family: var(--fm-font-display); font-size: 42px; font-weight: 700; line-height: 1; color: var(--fm-ink);
+        font-family: var(--fm-font-display); font-size: 42px; font-weight: 700; line-height: 1; color: var(--fm-navy);
       }
       #fm-loyalty-root .fm-balance-label {
         font-size: 11px; letter-spacing: .06em; text-transform: uppercase; color: var(--fm-ink-soft);
@@ -315,10 +316,10 @@
       }
       #fm-loyalty-root .fm-coupon-note { font-size: 13px; color: rgba(255,248,240,0.8); line-height: 1.6; }
       #fm-loyalty-root .fm-copy-btn {
-        margin-top: 14px; background: transparent; border: 1px solid var(--fm-cream);
+        margin-top: 14px; background: var(--fm-pink); border: none;
         color: var(--fm-cream); padding: 9px 18px; font-size: 11px;
       }
-      #fm-loyalty-root .fm-copy-btn:hover { background: var(--fm-cream); color: var(--fm-navy); opacity: 1; }
+      #fm-loyalty-root .fm-copy-btn:hover { opacity: .85; }
 
       #fm-loyalty-root .fm-empty, #fm-loyalty-root .fm-error {
         text-align: center; padding: 18px 8px; font-size: 14px; color: var(--fm-ink-soft); line-height: 1.7;
