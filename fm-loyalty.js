@@ -24,7 +24,7 @@
    ========================================================== */
 (function () {
   // ⚠️ Replace this with your Apps Script Web App URL
-  const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbz-_QqKJ1Wc-cAb-H1Wrv3v8AQ8dy1JvFyYap6wDhPmb_UEIua4jbpv9oJoFoNe-E1iew/exec';
+  const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxcXngbobFkCXAE7ISdLyiUaekfHLXjMf7rZq9yIjrF653N2gpWDKihpEGxhfbY-F3IQw/exec';
 
   const TIERS = [
     { points: 100, discount: 30 },
